@@ -1,20 +1,20 @@
-package graph;
+package graph.basic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- * 깊이 우선 탐색을 수행하는 클래스(Depth-First-Search)
+ * 너비 우선 탐색을 수행하는 클래스(Breadth-First-Search)
  */
-public class DFSSearch {
-    public ArrayList<String> dfsFunc(HashMap<String, ArrayList<String>> graph, String startNode){
+public class BFSSearch {
+    public ArrayList<String> bfsFunc(HashMap<String, ArrayList<String>> graph, String startNode){
         ArrayList<String> visited = new ArrayList<>();
         ArrayList<String> needVisit = new ArrayList<>();
 
         needVisit.add(startNode);
         while(needVisit.size() > 0){
-            String node = needVisit.remove(needVisit.size()-1);
+            String node = needVisit.remove(0);
             if(!visited.contains(node)){
                 needVisit.addAll(graph.get(node));
                 visited.add(node);
@@ -36,7 +36,7 @@ public class DFSSearch {
         graph.put("I", new ArrayList<String>(Arrays.asList("C", "J")));
         graph.put("J", new ArrayList<String>(Arrays.asList("I")));
 
-        DFSSearch dObject = new DFSSearch();
-        System.out.println(dObject.dfsFunc(graph, "A"));
+        BFSSearch bObject = new BFSSearch();
+        System.out.println(bObject.bfsFunc(graph, "A"));
     }
 }
