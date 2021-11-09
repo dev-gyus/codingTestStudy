@@ -1,4 +1,4 @@
-package graph.greedy;
+package greedy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
