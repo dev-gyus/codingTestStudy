@@ -3,14 +3,15 @@ package remind.graph.advanced;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 class DijkstraEdge implements Comparable<DijkstraEdge>{
-    public Integer distance;
-    public String node1;
+    Integer distance;
+    String node;
 
-    public DijkstraEdge(Integer distance, String node1) {
+    public DijkstraEdge(Integer distance, String node) {
         this.distance = distance;
-        this.node1 = node1;
+        this.node = node;
     }
 
     @Override
@@ -20,46 +21,38 @@ class DijkstraEdge implements Comparable<DijkstraEdge>{
 
     @Override
     public String toString(){
-        return "(" + this.distance + ", " + this.node1 + ")";
+        return "(" + this.distance + ", " + this.node + ")";
     }
-
 }
 public class DijkstraPath {
     public HashMap<String, Integer> dijkstraFunc(HashMap<String, ArrayList<DijkstraEdge>> graph, String startNode){
         HashMap<String, Integer> distances = new HashMap<>();
-        // 초기화
-        for(String key : graph.keySet()){
+        // 스타트 노드를 제외한 나머지 모든 노드까지 가는 거리는 모두 무한으로 설정
+        for (String key : graph.keySet()) {
             distances.put(key, Integer.MAX_VALUE);
         }
+        // 스타트 노드의 거리는 0 으로 세팅
         distances.put(startNode, 0);
-
-        // 특정 노드와 연결된 노드들 중 방문해야할 노드 정보를 갖는 ArrayList를 선언 (다익스트라는 시작 노드에서 그래프 전체의 노드들로 가는 각각의 최단거리를 구하는 알고리즘)
-        ArrayList<DijkstraEdge> needVisitList = new ArrayList<>();
-
-        // 최초 스타트 엣지 추가
-        needVisitList.add(new DijkstraEdge(distances.get(startNode), startNode));
-
-        while(needVisitList.size() > 0){
-            DijkstraEdge currentEdge = needVisitList.remove(0);
-            String currentNode = currentEdge.node1;
-            Integer currentDistance = currentEdge.distance;
-            ArrayList<DijkstraEdge> adjacentEdges = graph.get(currentNode);
-
-
-            for (DijkstraEdge adjacentEdge : adjacentEdges) {
-                String adjacentNode = adjacentEdge.node1;
-                Integer adjacentDistance = adjacentEdge.distance;
-                Integer weight = currentDistance + adjacentDistance;
-                // 현재 노드에서 인접한 노드를 방문할때 필요한 총 비용(거리)이 기존에 인접한 노드를 방문할때 갖고있던 최소값보다 더 작으면 거리를 갱신하고, 방문필요 노드 목록에 인접한노드의 인접한노드를 추가함
-                // 추가하는이유 = 다익스트라 알고리즘은 기본적으로 탐욕알고리즘을 적용하므로 최소한의 비용을 필요로하는 경우만을 모으다보면 최소한의 비용으로 원하는 결과를 얻을수 있다는 마인드를 전제로 하기 때문
-                if(distances.get(adjacentNode) > weight) {
-                    distances.put(adjacentNode, weight);
-                    needVisitList.add(new DijkstraEdge(weight, adjacentNode));
+        // 특정 노드에 연결된 엣지의 거리를 비교해서 방문하기 위해 queue 생성
+        PriorityQueue<DijkstraEdge> queue = new PriorityQueue<>();
+        // 시작 노드와 연결된 엣지들 모두 큐에 넣기
+        queue.add(new DijkstraEdge(0, startNode));
+        while(queue.size() > 0){
+            DijkstraEdge currentEdge = queue.poll();
+            String currentNode = currentEdge.node;
+            Integer currentEdgeDistance = currentEdge.distance;
+            // 현재 노드와 연결된 엣지목록을 가져옴
+            ArrayList<DijkstraEdge> adjacentEdgeList = graph.get(currentNode);
+            for (DijkstraEdge adjacentEdge : adjacentEdgeList) {
+                Integer adjacentEdgeDistance = adjacentEdge.distance;
+                String adjacentNode = adjacentEdge.node;
+                Integer totalDistance = currentEdgeDistance + adjacentEdgeDistance;
+                if (distances.get(adjacentNode) > totalDistance) {
+                    distances.put(adjacentNode, totalDistance);
+                    queue.add(new DijkstraEdge(totalDistance, adjacentNode));
                 }
             }
         }
-
-
         return distances;
     }
     public static void main(String[] args){
@@ -74,5 +67,4 @@ public class DijkstraPath {
         DijkstraPath dObject = new DijkstraPath();
         System.out.println(dObject.dijkstraFunc(graph, "A"));
     }
-
 }
