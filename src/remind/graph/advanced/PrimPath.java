@@ -2,6 +2,7 @@ package remind.graph.advanced;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 class PrimEdge implements Comparable<PrimEdge>{
@@ -14,6 +15,7 @@ class PrimEdge implements Comparable<PrimEdge>{
         this.node1 = node1;
         this.node2 = node2;
     }
+
     @Override
     public int compareTo(PrimEdge edge){
         return this.distance - edge.distance;
@@ -26,37 +28,41 @@ class PrimEdge implements Comparable<PrimEdge>{
 }
 public class PrimPath {
     public ArrayList<PrimEdge> primFunc(String startNode, ArrayList<PrimEdge> edges){
-        ArrayList<PrimEdge> mst = new ArrayList<>();
+        ArrayList<PrimEdge> mst = new ArrayList<PrimEdge>();
         HashMap<String, ArrayList<PrimEdge>> connectedEdges = new HashMap<>();
         ArrayList<String> connectedNodes = new ArrayList<>();
 
+        // 초기화
         for (PrimEdge edge : edges) {
-            String node1 = edge.node1;
-            String node2 = edge.node2;
-            if(!connectedEdges.containsKey(node1)){
-                connectedEdges.put(node1, new ArrayList<>());
+            if(!connectedEdges.containsKey(edge.node1)){
+                connectedEdges.put(edge.node1, new ArrayList<>());
             }
-            if(!connectedEdges.containsKey(node2)){
-                connectedEdges.put(node2, new ArrayList<>());
+            if(!connectedEdges.containsKey(edge.node2)){
+                connectedEdges.put(edge.node2, new ArrayList<>());
             }
         }
-        // 각 노드별로 연결된 엣지 추가
+
         for (PrimEdge edge : edges) {
             connectedEdges.get(edge.node1).add(new PrimEdge(edge.distance, edge.node1, edge.node2));
             connectedEdges.get(edge.node2).add(new PrimEdge(edge.distance, edge.node2, edge.node1));
         }
-        // 최소 거리를 가진 엣지를 선택해야 하므로 queue 선언
+
         PriorityQueue<PrimEdge> queue = new PriorityQueue<>();
-        // 큐에 시작노드에 연결된 엣지 추가
-        queue.addAll(connectedEdges.get(startNode));
-        // 연결된 노드 목록에 시작 노드 추가
+        queue.addAll(connectedEdges.getOrDefault(startNode, new ArrayList<>()));
         connectedNodes.add(startNode);
+
         while(queue.size() > 0){
-            PrimEdge currentEdge = queue.poll();
-            if(!connectedNodes.contains(currentEdge.node2)){
-                connectedNodes.add(currentEdge.node2);
-                mst.add(currentEdge);
-                queue.addAll(connectedEdges.get(currentEdge.node2));
+            PrimEdge poppedEdge = queue.poll();
+            if(!connectedNodes.contains(poppedEdge.node2)) {
+                mst.add(poppedEdge);
+                connectedNodes.add(poppedEdge.node2);
+                ArrayList<PrimEdge> adjacentEdges = connectedEdges.getOrDefault(poppedEdge.node2, new ArrayList<>());
+                for (PrimEdge adjacentEdge : adjacentEdges) {
+                    if(!connectedNodes.contains(adjacentEdge.node2)){
+                        queue.add(adjacentEdge);
+                    }
+                }
+
             }
         }
         return mst;
