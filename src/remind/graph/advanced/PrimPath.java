@@ -46,7 +46,7 @@ public class PrimPath {
             connectedEdges.get(edge.node1).add(new PrimEdge(edge.distance, edge.node1, edge.node2));
             connectedEdges.get(edge.node2).add(new PrimEdge(edge.distance, edge.node2, edge.node1));
         }
-
+//
         PriorityQueue<PrimEdge> queue = new PriorityQueue<>();
         queue.addAll(connectedEdges.getOrDefault(startNode, new ArrayList<>()));
         connectedNodes.add(startNode);
