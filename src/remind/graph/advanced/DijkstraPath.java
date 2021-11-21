@@ -1,6 +1,9 @@
 package remind.graph.advanced;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 class DijkstraEdge implements Comparable<DijkstraEdge>{
     public Integer distance;
@@ -9,11 +12,6 @@ class DijkstraEdge implements Comparable<DijkstraEdge>{
     public DijkstraEdge(Integer distance, String node) {
         this.distance = distance;
         this.node = node;
-    }
-
-    @Override
-    public String toString(){
-        return "(" + this.distance + ", " + this.node + ")";
     }
 
     @Override
@@ -30,26 +28,26 @@ public class DijkstraPath {
             distance.put(node, Integer.MAX_VALUE);
         }
         distance.put(startNode, 0);
-        Queue<DijkstraEdge> needVisitList = new PriorityQueue<>(graph.get(startNode));
-        while(needVisitList.size() > 0){
-            DijkstraEdge edge = needVisitList.poll();
-            Integer edgeDistance = edge.distance;
-            String destinationNode = edge.node;
-            if(distance.get(destinationNode) > edgeDistance) {
-                distance.put(destinationNode, edgeDistance);
-                ArrayList<DijkstraEdge> adjacentEdges = graph.get(destinationNode);
-                for (DijkstraEdge adjacentNode : adjacentEdges) {
-                    Integer totalDistance = edgeDistance + adjacentNode.distance;
-                    if (distance.get(adjacentNode.node) > totalDistance){
-                        needVisitList.add(new DijkstraEdge(totalDistance, adjacentNode.node));
-                    }
+
+        PriorityQueue<DijkstraEdge> needVisit = new PriorityQueue<>();
+        needVisit.add(new DijkstraEdge(distance.get(startNode), startNode));
+
+        while(needVisit.size() > 0){
+            DijkstraEdge currentVisitEdge = needVisit.poll();
+            Integer curEdgeDistance = currentVisitEdge.distance;
+            String destinationNode = currentVisitEdge.node;
+            for(DijkstraEdge adjacentEdge : graph.get(destinationNode)){
+                Integer totalDistance = curEdgeDistance + adjacentEdge.distance;
+                if(distance.get(adjacentEdge.node) > totalDistance){
+                    distance.put(adjacentEdge.node, totalDistance);
+                    needVisit.add(new DijkstraEdge(totalDistance, adjacentEdge.node));
                 }
             }
+
         }
+
         return distance;
-
     }
-
     public static void main(String[] args){
         HashMap<String, ArrayList<DijkstraEdge>> graph = new HashMap<String, ArrayList<DijkstraEdge>>();
         graph.put("A", new ArrayList<DijkstraEdge>(Arrays.asList(new DijkstraEdge(8, "B"), new DijkstraEdge(1, "C"), new DijkstraEdge(2, "D"))));

@@ -21,18 +21,16 @@ class PrimEdge implements Comparable<PrimEdge>{
         return this.distance - edge.distance;
     }
 
-    @Override
     public String toString(){
         return "(" + this.distance + ", " + this.node1 + ", " + this.node2 + ")";
     }
 }
 public class PrimPath {
     public ArrayList<PrimEdge> primFunc(String startNode, ArrayList<PrimEdge> edges){
-        ArrayList<PrimEdge> mst = new ArrayList<PrimEdge>();
+        ArrayList<PrimEdge> mst = new ArrayList<>();
+        // 특정 노드에 연결된 엣지가 뭐가있는지 알기위한 객체 선언
         HashMap<String, ArrayList<PrimEdge>> connectedEdges = new HashMap<>();
-        ArrayList<String> connectedNodes = new ArrayList<>();
-
-        // 초기화
+        // key, value 초기화
         for (PrimEdge edge : edges) {
             if(!connectedEdges.containsKey(edge.node1)){
                 connectedEdges.put(edge.node1, new ArrayList<>());
@@ -42,32 +40,31 @@ public class PrimPath {
             }
         }
 
-        for (PrimEdge edge : edges) {
+        // value에 엣지 기본값 추가
+        for(PrimEdge edge : edges){
             connectedEdges.get(edge.node1).add(new PrimEdge(edge.distance, edge.node1, edge.node2));
             connectedEdges.get(edge.node2).add(new PrimEdge(edge.distance, edge.node2, edge.node1));
         }
-//
-        PriorityQueue<PrimEdge> queue = new PriorityQueue<>();
-        queue.addAll(connectedEdges.getOrDefault(startNode, new ArrayList<>()));
+        // 연결된 노드들을 관리하는 객체 추가
+        ArrayList<String> connectedNodes = new ArrayList<>();
+        // 시작 노드 연결
         connectedNodes.add(startNode);
+        // 특정 노드의 연결된 엣지들 중 distance값이 가장 작은 것부터 꺼내기 위한 queue 선언
+        PriorityQueue<PrimEdge> queue = new PriorityQueue<>();
+        // 시작점에 연결된 엣지들 추가
+        queue.addAll(connectedEdges.get(startNode));
 
         while(queue.size() > 0){
-            PrimEdge poppedEdge = queue.poll();
-            if(!connectedNodes.contains(poppedEdge.node2)) {
-                mst.add(poppedEdge);
-                connectedNodes.add(poppedEdge.node2);
-                ArrayList<PrimEdge> adjacentEdges = connectedEdges.getOrDefault(poppedEdge.node2, new ArrayList<>());
-                for (PrimEdge adjacentEdge : adjacentEdges) {
-                    if(!connectedNodes.contains(adjacentEdge.node2)){
-                        queue.add(adjacentEdge);
-                    }
-                }
-
+            PrimEdge adjacentEdge = queue.poll();
+            // 특정 엣지의 도착점이 연결된 노드객체에 없다면 연결 노드에 추가하고, mst에 엣지 추가하고, 그 노드들과 연결된 엣지를 큐에 넣음
+            if(!connectedNodes.contains(adjacentEdge.node2)){
+                connectedNodes.add(adjacentEdge.node2);
+                mst.add(adjacentEdge);
+                queue.addAll(connectedEdges.get(adjacentEdge.node2));
             }
         }
         return mst;
     }
-
     public static void main(String[] args){
         ArrayList<PrimEdge> myedges = new ArrayList<PrimEdge>();
         myedges.add(new PrimEdge(7, "A", "B"));
