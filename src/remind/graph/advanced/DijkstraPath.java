@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
-class DijkstraEdge implements Comparable<DijkstraEdge>{
+class DijkstraEdge implements Comparable<DijkstraEdge> {
     public Integer distance;
     public String node;
 
@@ -15,8 +15,8 @@ class DijkstraEdge implements Comparable<DijkstraEdge>{
     }
 
     @Override
-    public int compareTo(DijkstraEdge dijkstraEdge){
-        return this.distance - dijkstraEdge.distance;
+    public int compareTo(DijkstraEdge edge){
+        return this.distance - edge.distance;
     }
 }
 
@@ -27,23 +27,25 @@ public class DijkstraPath {
         for (String node : graph.keySet()) {
             distance.put(node, Integer.MAX_VALUE);
         }
+        // 시작 노드는 반드시 거리가 0이어야함 (어짜피 안들림)
         distance.put(startNode, 0);
+        PriorityQueue<DijkstraEdge> queue = new PriorityQueue<>();
+        queue.add(new DijkstraEdge(0, startNode));
 
-        PriorityQueue<DijkstraEdge> needVisit = new PriorityQueue<>();
-        needVisit.add(new DijkstraEdge(distance.get(startNode), startNode));
-
-        while(needVisit.size() > 0){
-            DijkstraEdge currentVisitEdge = needVisit.poll();
-            Integer curEdgeDistance = currentVisitEdge.distance;
-            String destinationNode = currentVisitEdge.node;
-            for(DijkstraEdge adjacentEdge : graph.get(destinationNode)){
-                Integer totalDistance = curEdgeDistance + adjacentEdge.distance;
-                if(distance.get(adjacentEdge.node) > totalDistance){
-                    distance.put(adjacentEdge.node, totalDistance);
-                    needVisit.add(new DijkstraEdge(totalDistance, adjacentEdge.node));
+        while(queue.size() > 0){
+            DijkstraEdge edge = queue.poll();
+            Integer edgeDistance = edge.distance;
+            String destinatinoNode = edge.node;
+            ArrayList<DijkstraEdge> adjacentEdges = graph.get(destinatinoNode);
+            for(DijkstraEdge adjacentEdge : adjacentEdges){
+                Integer adjacentDistance = adjacentEdge.distance;
+                String adjacentNode = adjacentEdge.node;
+                Integer totalDistance = edgeDistance + adjacentDistance;
+                if(distance.get(adjacentNode) > totalDistance){
+                    distance.put(adjacentNode, totalDistance);
+                    queue.add(new DijkstraEdge(totalDistance, adjacentNode));
                 }
             }
-
         }
 
         return distance;

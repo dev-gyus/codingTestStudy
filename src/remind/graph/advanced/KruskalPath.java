@@ -2,14 +2,14 @@ package remind.graph.advanced;
 
 import java.util.*;
 
-class KruskalEdge implements Comparable<KruskalEdge> {
+class KruskalEdge implements Comparable<KruskalEdge>{
     public Integer distance;
     public String node1;
     public String node2;
 
-    public KruskalEdge(Integer distance, String node1, String node2) {
+    public KruskalEdge(Integer distance, String node, String node2) {
         this.distance = distance;
-        this.node1 = node1;
+        this.node1 = node;
         this.node2 = node2;
     }
 
@@ -18,6 +18,7 @@ class KruskalEdge implements Comparable<KruskalEdge> {
         return this.distance - kruskalEdge.distance;
     }
 
+    @Override
     public String toString(){
         return "(" + this.distance + ", " + this.node1 + ", " + this.node2 + ")";
     }
@@ -27,53 +28,45 @@ public class KruskalPath {
     public HashMap<String, Integer> rank = new HashMap<>();
 
     public String findParent(String node){
-        if(!Objects.equals(parent.get(node), node)){
+        if(!parent.get(node).equals(node)){
             parent.put(node, findParent(parent.get(node)));
         }
         return parent.get(node);
     }
 
     public void union(String node1, String node2){
-        String node1Parent = findParent(node1);
-        String node2Parent = findParent(node2);
-        // node1, node2의 루트 노드가 서로 다르면 사이클이 없다고 판단, union 실행
-        if(!Objects.equals(node1Parent, node2Parent)){
-            // node1의 루트 노드 랭크가 node2 루트 노드 랭크보다 높다면, node2 루트 노드의 부모노드를 node1으로 지정
-            if(rank.get(node1Parent) > rank.get(node2Parent)){
+        String node1Parent = parent.get(node1);
+        String node2Parent = parent.get(node2);
+
+        if(!Objects.equals(node1Parent, node2Parent)) {
+            if (rank.get(node1Parent) > rank.get(node2Parent)) {
                 parent.put(node2Parent, node1Parent);
-            }
-            // 아니면 node1의 루트 노드 부모노드를 node2 루트 노드로 지정
-            else{
+            } else {
                 parent.put(node1Parent, node2Parent);
-                // 만약 두 루트노드의 랭크가 같다면, node2 루트 노드의 랭크를 하나 올림
-                if(Objects.equals(rank.get(node1Parent), rank.get(node2Parent))){
+                if (Objects.equals(rank.get(node1Parent), rank.get(node2Parent))) {
                     rank.put(node2Parent, rank.get(node2Parent) + 1);
                 }
             }
         }
     }
 
-    public ArrayList<KruskalEdge> kruskalFunc(ArrayList<String> vertices, ArrayList<KruskalEdge> edges){
+    public ArrayList<KruskalEdge> kruskalFunc(ArrayList<String> vertices, ArrayList<KruskalEdge> kruskalEdges){
         ArrayList<KruskalEdge> mst = new ArrayList<>();
-        // parent, rank 초기값 세팅
-        for(String vertex : vertices){
+
+        for (String vertex : vertices) {
             parent.put(vertex, vertex);
             rank.put(vertex, 0);
         }
-        // distance 낮은 순서대로 엣지를 정렬
-        Collections.sort(edges);
-        while(edges.size() > 0){
-            KruskalEdge currentEdge = edges.remove(0);
-            String node1 = currentEdge.node1;
-            String node2 = currentEdge.node2;
-            // node1, node2의 루트노드가 같지 않다면 하나로 연결하고 mst 추가
-            if(!Objects.equals(findParent(node1), findParent(node2))){
-                mst.add(currentEdge);
-                union(node1, node2);
+        // distance 오름차순으로 edges 정렬
+        Collections.sort(kruskalEdges);
+
+        for (KruskalEdge kruskalEdge : kruskalEdges) {
+            if(!Objects.equals(findParent(kruskalEdge.node1), findParent(kruskalEdge.node2))){
+                mst.add(kruskalEdge);
+                union(kruskalEdge.node1, kruskalEdge.node2);
             }
         }
         return mst;
-
     }
 
     public static void main(String[] args){
