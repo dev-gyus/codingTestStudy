@@ -32,6 +32,9 @@ public class NQueen {
                 currentCandidate.remove(currentCandidate.size() - 1);
             }
         }
-
+    }
+    public static void main(String[] args){
+        NQueen nQueen = new NQueen();
+        nQueen.dfsFunc(4,0,new ArrayList<>());
     }
 }
