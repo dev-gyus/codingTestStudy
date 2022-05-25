@@ -2,6 +2,9 @@ package boj.sort.ko_en_math;
 
 import java.util.*;
 
+/**
+ * BOJ 10825
+ */
 public class Main {
     static int total;
     static Student[] studentArray;

@@ -3,6 +3,9 @@ package boj.sort.sequence.sort;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ * BOJ 1015
+ */
 public class Main {
     static int[] A;
     static int[] B;
