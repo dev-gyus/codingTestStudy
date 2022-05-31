@@ -8,11 +8,12 @@ import java.util.Scanner;
 
 /**
  * BOJ 15970
+ *
  */
 public class Main {
     static List<Point>[] listArray;
     static int N;
-
+//
     static void init() {
         Scanner scanner = new Scanner(System.in);
         N = scanner.nextInt();
