@@ -9,7 +9,7 @@ public class Main {
     static int N;
     static int[] A;
     static int[] B;
-
+//
 
     static void init() {
         N = scanner.nextInt();
