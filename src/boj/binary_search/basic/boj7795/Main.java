@@ -1,4 +1,4 @@
-package boj.binary_search.boj7795;
+package boj.binary_search.basic.boj7795;
 
 import java.util.Arrays;
 import java.util.Scanner;
